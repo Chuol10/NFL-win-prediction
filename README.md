@@ -49,5 +49,3 @@ We also tested hypothetical team profiles to demonstrate how organizations might
 - `Advanced Business Applications - NFL.docx` – Final written report.
 
 ---
-
-> 📌 **Instructions**: Place your image files in an `/images` folder in the repo. Update the image file names if different.
