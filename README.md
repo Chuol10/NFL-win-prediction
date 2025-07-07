@@ -4,8 +4,6 @@ This project applies sports analytics to build a linear regression model that pr
 
 ---
 
-![Actual vs. Predicted Wins Scatter](images/actual_vs_predicted.png)
-*Actual vs Predicted Wins (2018–2023)*
 
 ## 🏈 Overview
 
@@ -18,8 +16,6 @@ We found that scoring contributes slightly more to wins than defense, with every
 
 ---
 
-![2023 Team Win Comparison](images/2023_win_comparison.png)
-*Actual vs. Predicted Wins by Team (2023)*
 
 ## 📈 Key Results
 
