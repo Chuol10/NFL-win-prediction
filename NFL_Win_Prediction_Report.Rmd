@@ -1,0 +1,102 @@
+
+---
+title: "Predicting NFL Team Wins Using Linear Regression"
+author: "Chuol Gatkek & Andrew Dingman"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Introduction
+
+This project applies linear regression to predict the number of wins for NFL teams using offensive and defensive statistics. Using data from 2018 to 2023, we explored how total points scored and allowed influence a team's success, with an emphasis on actionable insights for decision-makers.
+
+## Load Libraries and Data
+
+```{r}
+# Load necessary libraries
+library(tidyverse)
+library(nflverse)
+library(vroom)
+```
+
+## Prepare and Clean the Data
+
+```{r}
+# Load NFL game data from nflverse
+games_data <- nflreadr::load_schedules()
+
+# Filter regular season games from 2018 to 2023
+games <- games_data %>%
+  filter(season >= 2018 & season <= 2023, game_type == "REG") %>%
+  select(season, week, team_home, team_away, result, home_score, away_score)
+
+# Calculate wins per team
+home_wins <- games %>%
+  filter(result > 0) %>%
+  group_by(team_home) %>%
+  summarise(home_wins = n())
+
+away_wins <- games %>%
+  filter(result < 0) %>%
+  group_by(team_away) %>%
+  summarise(away_wins = n())
+
+total_wins <- full_join(home_wins, away_wins, by = c("team_home" = "team_away")) %>%
+  mutate(total_wins = coalesce(home_wins, 0) + coalesce(away_wins, 0)) %>%
+  rename(team = team_home) %>%
+  select(team, total_wins)
+```
+
+## Merge Wins with Points Scored and Allowed
+
+```{r}
+# Summarize offensive and defensive stats
+team_stats <- games %>%
+  mutate(
+    pts_scored_home = home_score,
+    pts_allowed_home = away_score,
+    pts_scored_away = away_score,
+    pts_allowed_away = home_score
+  ) %>%
+  select(team_home, pts_scored_home, pts_allowed_home, team_away, pts_scored_away, pts_allowed_away) %>%
+  pivot_longer(cols = everything(), names_to = c("type", ".value"), names_pattern = "(.*)_(.*)") %>%
+  rename(team = team, pts_scored = scored, pts_allowed = allowed) %>%
+  group_by(team) %>%
+  summarise(
+    total_points_scored = sum(pts_scored, na.rm = TRUE),
+    total_points_allowed = sum(pts_allowed, na.rm = TRUE)
+  )
+
+# Merge with win data
+nfl_df <- left_join(total_wins, team_stats, by = "team")
+```
+
+## Build Linear Regression Model
+
+```{r}
+# Fit regression model
+lm_model <- lm(total_wins ~ total_points_scored + total_points_allowed, data = nfl_df)
+summary(lm_model)
+```
+
+## Visualize Model Results
+
+```{r}
+# Plot predicted vs actual
+nfl_df$predicted_wins <- predict(lm_model)
+
+ggplot(nfl_df, aes(x = total_wins, y = predicted_wins)) +
+  geom_point(color = "steelblue", size = 3) +
+  geom_abline(linetype = "dashed", color = "red") +
+  labs(title = "Actual vs Predicted Wins", x = "Actual Wins", y = "Predicted Wins") +
+  theme_minimal()
+```
+
+## Conclusion
+
+This regression model revealed strong predictive power between scoring performance and win totals. Teams that score more and allow fewer points predictably win more games. This type of model can assist NFL analysts, coaches, and front offices in measuring team efficiency and identifying performance gaps.
+
