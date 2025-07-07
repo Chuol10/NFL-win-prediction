@@ -46,8 +46,6 @@ We also tested hypothetical team profiles to demonstrate how organizations might
 ## 📁 Files
 
 - `nfl_win_prediction.Rmd` – Full code and analysis.
-- `NFL_Win_Prediction_Code.docx` – Raw code (Word format).
-- `NFL_Win_Prediction_Code_Screenshots.pdf` – Annotated screenshots.
 - `Advanced Business Applications - NFL.docx` – Final written report.
 
 ---
