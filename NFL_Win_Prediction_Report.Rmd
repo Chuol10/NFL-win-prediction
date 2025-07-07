@@ -1,8 +1,7 @@
 
 ---
 title: "Predicting NFL Team Wins Using Linear Regression"
-author: "Chuol Gatkek & Andrew Dingman"
-date: "`r Sys.Date()`"
+author: "Chuol Gatkek"
 output: html_document
 ---
 
